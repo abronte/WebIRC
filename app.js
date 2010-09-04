@@ -1,5 +1,6 @@
 var app = require('express').createServer();
 var irc = require('./lib/IRC-js/lib/irc');
+require('jade');
 
 var server = new irc({ server: 'irc.freenode.net', nick: 'Testington' });
 
@@ -15,11 +16,14 @@ server.addListener('privmsg', function(msg) {
 
 //server.join("jerb");
 
-//app.set('view engine', 'jade');
+app.set('view engine', 'jade');
+app.set('view options', {
+	    layout: false
+});
 
 app.get('/', function(req, res){
 	//res.send('hello world');
-//	res.render('index');	
+	res.render('index');	
 });
 
 app.listen(3000);
