@@ -7,8 +7,9 @@ require('jade');
 
 var opts = {server: "irc.rizon.net",
 						channel: "#Jerb",
-					  nick: "Testington"};
-//var ircMessages = new Array();
+					  nick: "Testington",
+						maxMsgs: 500};
+var ircMessages = new Array();
 var webClient = null;
 var server = new irc({ server: opts.server, nick: opts.nick });
 
@@ -17,13 +18,23 @@ server.connect(function(){
 });
 
 server.addListener('privmsg', function(msg) {
+	nick = msg.person.nick;
+	chan = msg.params[0];
+	message = msg.params[1];
+
+	var data = {from:nick, msg:message};
+
 	console.log("IRC: "+msg.params[0]+" - "+msg.person.nick+":"+msg.params[1]+"\n");
 
-	if(msg.params[0] == opts.channel) {
-//		ircMessages.push({from:msg.person.nick,msg:msg.params[1],recv:false});
+	if(chan == opts.channel) {
+		ircMessages.push(data);
 		if(webClient != null) {
 			console.log("sending to the socket");
-			webClient.send({from:msg.person.nick,msg:msg.params[1]});
+			webClient.send(data);
+		}
+
+		if(ircMessages.length >= opts.maxMsgs) {
+			ircMessages = ircMessages.slice(500);
 		}
 	}
 });
@@ -31,6 +42,8 @@ server.addListener('privmsg', function(msg) {
 socket.on('connection', function(client){
 	console.log("got a client!");
 	webClient = client;
+
+	client.send({msgs:ircMessages});
 
 	client.on('disconnect', function(){ 
 		console.log("disconnect");
@@ -59,6 +72,7 @@ app.get('/messages', function(req, res){
 	res.send({list: newMsgs});
 });
 
+app.get('/style.css', function(req, res){res.sendfile('static/style.css');});
 app.get('/client.js', function(req, res){res.sendfile('static/client.js');});
 app.get('/jquery.js', function(req, res){res.sendfile('static/jquery.js');});
 app.get('/socket.io.js', function(req, res){res.sendfile('static/socket.io.js');});

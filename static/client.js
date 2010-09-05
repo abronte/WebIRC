@@ -1,13 +1,34 @@
 function update(msg) 
 {
-	$("#messages").append(msg.from+": "+msg.msg+"<br/>");
+	$("#messages").append("&lt;"+msg.from+"&gt; "+msg.msg+"<br/>");
+	
+	scroll();
+}
+
+function updateAll(list)
+{
+	for(i in list) {
+		$("#messages").append("&lt;"+list[i].from+"&gt; "+list[i].msg+"<br/>");
+	}
+
+	scroll();
+}
+
+function scroll() 
+{
+	$("#messages").scrollTop(500);
 }
 
 $(document).ready(function() {
+	document.getElementById('messages').scrolltop = 10000;
 	var socket = new io.Socket(null, {port: 3000});
 	socket.connect();
 
 	socket.on('message', function(msg) {
-		update(msg);
+		if(msg.msgs != null) {
+			updateAll(msg.msgs);
+		} else {
+			update(msg);
+		}
 	});
 });
