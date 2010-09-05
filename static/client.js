@@ -1,17 +1,13 @@
-function update() 
+function update(msg) 
 {
-	$.get('/messages', function(data) {
-		if(data.list.length > 0) {
-			for(i in data.list) {
-				item = data.list[i];
-				$("#messages").append(item.from+": "+item.msg+"<br/>");
-			}
-		}
-	});
-
-	setTimeout('update()', 1000);
+	$("#messages").append(msg.from+": "+msg.msg+"<br/>");
 }
 
 $(document).ready(function() {
-	update();
+	var socket = new io.Socket(null, {port: 3000});
+	socket.connect();
+
+	socket.on('message', function(msg) {
+		update(msg);
+	});
 });
