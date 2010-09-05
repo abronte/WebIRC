@@ -28,14 +28,12 @@ server.addListener('privmsg', function(msg) {
 
 	if(chan == opts.channel) {
 		ircMessages.push(data);
-		if(webClient != null) {
-			console.log("sending to the socket");
-			webClient.send(data);
-		}
 
-		if(ircMessages.length >= opts.maxMsgs) {
+		if(webClient != null) 
+			webClient.send(data);
+
+		if(ircMessages.length >= opts.maxMsgs)
 			ircMessages = ircMessages.slice(500);
-		}
 	}
 });
 
