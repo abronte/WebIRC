@@ -20,10 +20,9 @@ function scroll()
 }
 
 $(document).ready(function() {
-	document.getElementById('messages').scrolltop = 10000;
 	var socket = new io.Socket(null, {port: 3000});
 	socket.connect();
-
+	
 	socket.on('message', function(msg) {
 		if(msg.msgs != null) {
 			updateAll(msg.msgs);
