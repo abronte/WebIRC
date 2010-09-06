@@ -3,6 +3,9 @@ var app = require('express').createServer(),
 		io = require('./lib/Socket.IO-node'),
 		socket = io.listen(app);
 
+var nstatic = require('./lib/node-static/lib/node-static');
+var fileServer = new nstatic.Server('./static');
+
 require('jade');
 
 var opts = {server: "irc.quakenet.org",
@@ -57,6 +60,10 @@ socket.on('connection', function(client){
 	});
 });
 
+app.use(function(req, res, next){
+	fileServer.serve(req, res);
+});
+
 app.set('view engine', 'jade');
 app.set('view options', {
 	    layout: false
@@ -65,10 +72,5 @@ app.set('view options', {
 app.get('/', function(req, res){
 	res.render('index');	
 });
-
-app.get('/style.css', function(req, res){res.sendfile('static/style.css');});
-app.get('/client.js', function(req, res){res.sendfile('static/client.js');});
-app.get('/jquery.js', function(req, res){res.sendfile('static/jquery.js');});
-app.get('/socket.io.js', function(req, res){res.sendfile('static/socket.io.js');});
 
 app.listen(3000);
