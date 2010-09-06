@@ -6,7 +6,7 @@ var app = require('express').createServer(),
 require('jade');
 
 var opts = {server: "irc.quakenet.org",
-						channel: "#Teamliquid",
+						channel: "#teamliquid",
 					  nick: "SimonR",
 						maxMsgs: 500};
 var ircMessages = [];
@@ -37,14 +37,14 @@ server.addListener('privmsg', function(msg) {
 			}
 		}
 
-		if(ircMessages.length >= opts.maxMsgs)
+		if(ircMessages.length >= opts.maxMsgs) 
 			ircMessages = ircMessages.slice(500);
 	}
 });
 
 socket.on('connection', function(client){
-	console.log("got a client :: "+client.sessionId+" :: "+webClients.length);
 	webClients.push({session:client.sessionId,client:client});
+	console.log("got a client :: "+client.sessionId+" :: "+webClients.length);
 
 	client.send({msgs:ircMessages});
 
