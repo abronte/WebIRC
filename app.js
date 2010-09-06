@@ -6,17 +6,17 @@ var app = require('express').createServer(),
 require('jade');
 
 var opts = {server: "irc.quakenet.org",
-						channel: "#teamliquid",
+						channel: "#jerb",
 					  nick: "SimonR",
 						maxMsgs: 500};
 var ircMessages = [];
 var webClients = []; 
 var server = new irc({ server: opts.server, nick: opts.nick });
 
-server.connect();
-
-server.addListener('mode', function() {
-	server.join(opts.channel);
+server.connect(function() {
+	setTimeout(function() {
+		server.join(opts.channel);
+	}, 2000);
 });
 
 server.addListener('privmsg', function(msg) {
@@ -24,7 +24,7 @@ server.addListener('privmsg', function(msg) {
 	chan = msg.params[0];
 	message = msg.params[1];
 
-	var data = {from:nick, msg:message};
+	var data = {channel: chan, from:nick, msg:message};
 
 	console.log("IRC: "+msg.params[0]+" - "+msg.person.nick+":"+msg.params[1]+"\n");
 
