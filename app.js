@@ -5,15 +5,17 @@ var app = require('express').createServer(),
 
 require('jade');
 
-var opts = {server: "irc.rizon.net",
-						channel: "#Jerb",
-					  nick: "Testington",
+var opts = {server: "irc.quakenet.org",
+						channel: "#Teamliquid",
+					  nick: "SimonR",
 						maxMsgs: 500};
-var ircMessages = new Array();
-var webClient = null;
+var ircMessages = [];
+var webClients = []; 
 var server = new irc({ server: opts.server, nick: opts.nick });
 
-server.connect(function(){
+server.connect();
+
+server.addListener('mode', function() {
 	server.join(opts.channel);
 });
 
@@ -29,8 +31,11 @@ server.addListener('privmsg', function(msg) {
 	if(chan == opts.channel) {
 		ircMessages.push(data);
 
-		if(webClient != null) 
-			webClient.send(data);
+		if(webClients.length != 0) {
+			for(i in webClients) {
+					webClients[i].client.send(data);
+			}
+		}
 
 		if(ircMessages.length >= opts.maxMsgs)
 			ircMessages = ircMessages.slice(500);
@@ -38,12 +43,16 @@ server.addListener('privmsg', function(msg) {
 });
 
 socket.on('connection', function(client){
-	console.log("got a client!");
-	webClient = client;
+	console.log("got a client :: "+client.sessionId+" :: "+webClients.length);
+	webClients.push({session:client.sessionId,client:client});
 
 	client.send({msgs:ircMessages});
 
 	client.on('disconnect', function(){ 
+		for(i in webClients) {
+			if(webClients[i].session == client.sessionId)
+				webClients.splice(i,1);
+		}
 		console.log("disconnect");
 	});
 });
@@ -55,19 +64,6 @@ app.set('view options', {
 
 app.get('/', function(req, res){
 	res.render('index');	
-});
-
-app.get('/messages', function(req, res){
-	var newMsgs = new Array();
-
-	for(i in ircMessages) {
-		if(!ircMessages[i].recv) {
-			msg = ircMessages[i];
-			ircMessages[i].recv = true;
-			newMsgs.push({from:msg.from,msg:msg.msg});
-		}
-	}
-	res.send({list: newMsgs});
 });
 
 app.get('/style.css', function(req, res){res.sendfile('static/style.css');});
