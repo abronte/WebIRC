@@ -16,7 +16,7 @@ function updateAll(list)
 
 function scroll() 
 {
-	$("#messages").scrollTop(10000);
+	$("#messages").scrollTop(20000);
 }
 
 $(document).ready(function() {
