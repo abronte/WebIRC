@@ -47,7 +47,10 @@ function createChannels(list)
 
 	$('body').append(str);
 
-	$('#tabs').tabs({selected: 0});
+	$('#tabs').tabs({selected: 0, show: function() {
+		for(i in channelList) 
+			scroll(i);
+	}});
 }
 
 $(document).ready(function() {
