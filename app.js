@@ -6,7 +6,7 @@ var app = require('express').createServer(),
 require('jade');
 
 var opts = {server: "irc.quakenet.org",
-						channel: "#jerb",
+						channels: ["#teamliquid", "#tlpickup"],
 					  nick: "SimonR",
 						maxMsgs: 500};
 var ircMessages = [];
@@ -15,7 +15,9 @@ var server = new irc({ server: opts.server, nick: opts.nick });
 
 server.connect(function() {
 	setTimeout(function() {
-		server.join(opts.channel);
+		for(i in opts.channels) {
+			server.join(opts.channels[i]);
+		}
 	}, 2000);
 });
 
@@ -28,7 +30,20 @@ server.addListener('privmsg', function(msg) {
 
 	console.log("IRC: "+msg.params[0]+" - "+msg.person.nick+":"+msg.params[1]+"\n");
 
-	if(chan == opts.channel) {
+	for(i in opts.channels) {
+		if(chan == opts.channels[i]) {
+			ircMessages.push(data);
+
+			if(webClients.length != 0) {
+				for(i in webClients) {
+						webClients[i].client.send(data);
+				}
+			}
+		}
+	}
+
+	/*
+	if(chan == opts.channels[0]) {
 		ircMessages.push(data);
 
 		if(webClients.length != 0) {
@@ -36,17 +51,18 @@ server.addListener('privmsg', function(msg) {
 					webClients[i].client.send(data);
 			}
 		}
-
-		if(ircMessages.length >= opts.maxMsgs) 
-			ircMessages = ircMessages.slice(500);
 	}
+	*/
+		
+	if(ircMessages.length >= opts.maxMsgs) 
+		ircMessages = ircMessages.slice(500);
 });
 
 socket.on('connection', function(client){
 	webClients.push({session:client.sessionId,client:client});
 	console.log("got a client :: "+client.sessionId+" :: "+webClients.length);
 
-	client.send({msgs:ircMessages});
+	client.send({msgs:ircMessages,channels: opts.channels});
 
 	client.on('disconnect', function(){ 
 		for(i in webClients) {
