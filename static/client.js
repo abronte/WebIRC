@@ -5,9 +5,10 @@ function update(msg)
 	for(i in channelList) {
 		if(channelList[i] == msg.channel)
 			$("#messages"+i).append("&lt;"+msg.from+"&gt; "+msg.msg+"<br/>");
+		
+		scroll(i);
 	}
 	
-	scroll(i);
 }
 
 function updateAll(list)
