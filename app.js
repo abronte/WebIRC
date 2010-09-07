@@ -8,7 +8,7 @@ require('jade');
 var opts = {server: "irc.quakenet.org",
 						channels: ["#teamliquid", "#tlpickup"],
 					  nick: "SimonR",
-						maxMsgs: 500};
+						maxMsgs: 1000};
 var ircMessages = [];
 var webClients = []; 
 var server = new irc({ server: opts.server, nick: opts.nick });
@@ -42,20 +42,8 @@ server.addListener('privmsg', function(msg) {
 		}
 	}
 
-	/*
-	if(chan == opts.channels[0]) {
-		ircMessages.push(data);
-
-		if(webClients.length != 0) {
-			for(i in webClients) {
-					webClients[i].client.send(data);
-			}
-		}
-	}
-	*/
-		
 	if(ircMessages.length >= opts.maxMsgs) 
-		ircMessages = ircMessages.slice(500);
+		ircMessages = ircMessages.splice(0,1);
 });
 
 socket.on('connection', function(client){
