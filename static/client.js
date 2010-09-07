@@ -4,7 +4,7 @@ function update(msg)
 {
 	for(i in channelList) {
 		if(channelList[i] == msg.channel)
-			$("#messages"+i).append("&lt;"+msg.from+"&gt; "+msg.msg+"<br/>");
+			$("#messages"+i).append("&lt;"+msg.from+"&gt; "+scanMsg(msg.msg)+"<br/>");
 		
 		scroll(i);
 	}
@@ -16,12 +16,19 @@ function updateAll(list)
 	for(i in list) {
 		for(j in channelList) {
 			if(channelList[j] == list[i].channel)
-				$("#messages"+j).append("&lt;"+list[i].from+"&gt; "+list[i].msg+"<br/>");
+				$("#messages"+j).append("&lt;"+list[i].from+"&gt; "+scanMsg(list[i].msg)+"<br/>");
 		}
 	}
 
 	for(i in channelList)
 		scroll(i);
+}
+
+function scanMsg(msg) 
+{
+	var regex = /\b(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)[-A-Z0-9+&@#\/%=~_|$?!:,.]*[A-Z0-9+&@#\/%=~_|$]/i;
+
+	return msg.replace(regex," <a href=\"$&\" target=\"_blank\">$&</a> ");
 }
 
 function scroll(i) 
