@@ -33,7 +33,7 @@ function scanMsg(msg)
 
 function scroll(i) 
 {
-	$("#messages"+i).scrollTop(20000);
+	$("#messages"+i).scrollTop(9999999);
 }
 
 function createChannels(list) 
@@ -60,7 +60,8 @@ function createChannels(list)
 	}});
 }
 
-$(document).ready(function() {
+function doPage() 
+{
 	var socket = new io.Socket(null, {port: 3000});
 	socket.connect();
 	
@@ -73,4 +74,15 @@ $(document).ready(function() {
 			update(msg);
 		}
 	});
+}
+
+$(document).ready(function() {
+	if("WebSocket" in window) {
+		$.getScript('socket.io.js', function() {
+			doPage();
+		});
+	} else {
+		window.location = "error.html";	
+	}
+	
 });
