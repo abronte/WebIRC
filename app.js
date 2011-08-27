@@ -1,7 +1,7 @@
-var app = require('express').createServer(),
-		irc = require('./lib/IRC-js/lib/irc'),
-		io = require('./lib/Socket.IO-node'),
-		socket = io.listen(app);
+var express = require('express')
+var app = express.createServer(),
+		irc = require('IRC-js'),
+		io = require('Socket.IO').listen(app);
 
 require('jade');
 
@@ -36,7 +36,7 @@ server.addListener('privmsg', function(msg) {
 
 			if(webClients.length != 0) {
 				for(i in webClients) {
-						webClients[i].client.send(data);
+						webClients[i].client.json.send(data);
 				}
 			}
 		}
@@ -46,11 +46,11 @@ server.addListener('privmsg', function(msg) {
 		ircMessages = ircMessages.splice(0,1);
 });
 
-socket.on('connection', function(client){
+io.sockets.on('connection', function(client) {
 	webClients.push({session:client.sessionId,client:client});
 	console.log("got a client :: "+client.sessionId+" :: "+webClients.length);
 
-	client.send({msgs:ircMessages,channels: opts.channels});
+	client.json.send({msgs:ircMessages,channels: opts.channels});
 
 	client.on('disconnect', function(){ 
 		for(i in webClients) {
