@@ -62,8 +62,7 @@ function createChannels(list)
 
 function doPage() 
 {
-	var socket = new io.Socket(null, {port: 3000});
-	socket.connect();
+	socket = io.connect();
 	
 	socket.on('message', function(msg) {
 		if(msg.channels != null) {
@@ -78,7 +77,7 @@ function doPage()
 
 $(document).ready(function() {
 	if("WebSocket" in window) {
-		$.getScript('socket.io.js', function() {
+		$.getScript('/socket.io/socket.io.js', function() {
 			doPage();
 		});
 	} else {
