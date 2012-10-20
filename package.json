@@ -1,0 +1,10 @@
+{
+  "name" : "WebIRC",
+  "version" : "0.0.1",
+  "dependencies": {
+    "jade": "= 0.27.6",
+    "irc-js": "= 0.2.27",
+    "express": "= 2.5.11",
+    "socket.io": "= 0.7.11"
+  }
+}
